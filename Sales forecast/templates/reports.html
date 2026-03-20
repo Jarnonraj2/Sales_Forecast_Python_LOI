@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Rapporten{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="display-5 fw-bold">
+        <i class="bi bi-file-text"></i> Rapporten
+    </h1>
+    <p class="text-muted">Overzicht van gegenereerde rapporten</p>
+</div>
+
+{% if reports %}
+<div class="row g-4">
+    {% for report in reports %}
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-file-earmark-text text-success"></i>
+                    {{ report.title }}
+                </h5>
+                <p class="text-muted small">
+                    <i class="bi bi-calendar"></i> 
+                    {{ report.created_date.strftime('%d-%m-%Y om %H:%M') }}
+                </p>
+                <p class="text-muted small">
+                    Rapport ID: {{ report.id }}
+                </p>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-sm btn-outline-primary" 
+                            onclick="alert('Rapport bekijken functionaliteit')">
+                        <i class="bi bi-eye"></i> Bekijken
+                    </button>
+                    <button class="btn btn-sm btn-outline-success" 
+                            onclick="alert('Download functionaliteit')">
+                        <i class="bi bi-download"></i> Downloaden
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-file-text" style="font-size: 4rem; color: #ccc;"></i>
+        <h3 class="mt-3">Geen rapporten beschikbaar</h3>
+        <p class="text-muted">Genereer rapporten vanuit uw simulaties</p>
+        <a href="{{ url_for('simulations') }}" class="btn btn-primary mt-3">
+            <i class="bi bi-calculator"></i> Naar Simulaties
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

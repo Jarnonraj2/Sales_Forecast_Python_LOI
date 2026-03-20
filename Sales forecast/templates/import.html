@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Excel Import{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="display-5 fw-bold">
+        <i class="bi bi-file-earmark-excel"></i> Excel Import
+    </h1>
+    <p class="text-muted">Importeer leaddata vanuit Excel bestand</p>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-upload"></i> Bestand Uploaden
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Selecteer Excel Bestand</label>
+                        <input type="file" class="form-control" id="file" name="file" 
+                               accept=".xlsx,.xls" required>
+                        <small class="text-muted">Toegestane formaten: .xlsx, .xls (max 16MB)</small>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <h6><i class="bi bi-info-circle"></i> Vereiste Excel Structuur</h6>
+                        <p class="small mb-2">Het Excel bestand moet de volgende kolommen bevatten:</p>
+                        <ul class="small mb-0">
+                            <li><strong>id</strong> - Uniek nummer (verplicht)</li>
+                            <li><strong>company_name</strong> - Bedrijfsnaam (verplicht)</li>
+                            <li><strong>estimated_value</strong> - Geschatte waarde in € (verplicht)</li>
+                            <li><strong>status</strong> - Status van lead (optioneel)</li>
+                            <li><strong>success_probability</strong> - Succeskans tussen 0.0-1.0 (optioneel)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-info text-white">
+                            <i class="bi bi-upload"></i> Importeren
+                        </button>
+                        <a href="{{ url_for('leads') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Annuleren
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-download"></i> Voorbeeld Bestand
+            </div>
+            <div class="card-body">
+                <p class="small text-muted">
+                    Wilt u een voorbeeld Excel bestand maken met testdata?
+                </p>
+                <p class="small text-muted">
+                    Voer het volgende commando uit in uw terminal:
+                </p>
+                <div class="alert alert-secondary">
+                    <code>python create_sample_excel.py</code>
+                </div>
+                <p class="small text-muted">
+                    Dit maakt een bestand aan genaamd <strong>leads_voorbeeld.xlsx</strong> 
+                    met 10 voorbeeld leads.
+                </p>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <i class="bi bi-lightbulb"></i> Tips
+            </div>
+            <div class="card-body">
+                <ul class="small">
+                    <li>Zorg dat alle verplichte kolommen aanwezig zijn</li>
+                    <li>Gebruik decimale notatie met punt (bijv. 0.3)</li>
+                    <li>Succeskans moet tussen 0.0 en 1.0 liggen</li>
+                    <li>Controleer spelling van kolomnamen</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}Nieuwe Simulatie{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="display-5 fw-bold">
+        <i class="bi bi-calculator-fill"></i> Nieuwe Simulatie Aanmaken
+    </h1>
+    <p class="text-muted">Maak een nieuwe omzetprognose simulatie</p>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-pencil"></i> Simulatie Gegevens
+            </div>
+            <div class="card-body">
+                <form method="POST" id="simulationForm">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Simulatie Naam</label>
+                        <input type="text" class="form-control" id="name" name="name" required 
+                               placeholder="bijv. Q1 2026 Prognose">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="scenario_id" class="form-label">Gebruik bestaand scenario (optioneel)</label>
+                        <select class="form-select" id="scenario_id" name="scenario_id">
+                            <option value="">-- Handmatig invoeren --</option>
+                            {% for scenario in scenarios %}
+                            <option value="{{ scenario.name }}">{{ scenario.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <small class="text-muted">Selecteer een scenario of voer handmatig parameters in</small>
+                    </div>
+                    
+                    <hr>
+                    
+                    <h5 class="mb-3">Parameters</h5>
+                    
+                    <div class="mb-3">
+                        <label for="num_leads" class="form-label">Aantal Leads</label>
+                        <input type="number" class="form-control" id="num_leads" name="num_leads" 
+                               min="0" value="100" required>
+                        <small class="text-muted">Aantal potentiële klanten om te verwerken</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="conversion_rate" class="form-label">
+                            Conversiepercentage (%)
+                            <span id="conversionValue" class="badge bg-primary">20%</span>
+                        </label>
+                        <input type="range" class="form-range" id="conversion_rate" name="conversion_rate" 
+                               min="0" max="100" value="20" step="1">
+                        <div class="d-flex justify-content-between">
+                            <small class="text-muted">0%</small>
+                            <small class="text-muted">100%</small>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="average_deal_value" class="form-label">Gemiddelde Dealwaarde (€)</label>
+                        <input type="number" class="form-control" id="average_deal_value" name="average_deal_value" 
+                               min="0" step="0.01" value="5000" required>
+                        <small class="text-muted">Gemiddelde waarde per gesloten deal</small>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <strong><i class="bi bi-info-circle"></i> Berekening Preview:</strong>
+                        <p class="mb-0 mt-2" id="calculationPreview">
+                            Verwachte omzet: <strong>€<span id="previewAmount">100,000</span></strong>
+                        </p>
+                        <small class="text-muted">
+                            <span id="previewFormula">100 leads × 20% × €5,000</span>
+                        </small>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-calculator"></i> Simulatie Uitvoeren
+                        </button>
+                        <a href="{{ url_for('simulations') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Annuleren
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-lightbulb"></i> Tips
+            </div>
+            <div class="card-body">
+                <h6>Conversiepercentage</h6>
+                <p class="small text-muted">
+                    Het percentage leads dat daadwerkelijk converteert naar een deal. 
+                    Typisch tussen 10-30% afhankelijk van uw branche.
+                </p>
+                
+                <h6 class="mt-3">Gemiddelde Dealwaarde</h6>
+                <p class="small text-muted">
+                    De gemiddelde waarde van een gesloten deal. Gebruik historische data 
+                    voor de meest accurate prognose.
+                </p>
+                
+                <h6 class="mt-3">Aantal Leads</h6>
+                <p class="small text-muted">
+                    Het totaal aantal leads dat u verwacht te genereren in de gekozen periode.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Live update van conversion rate percentage
+document.getElementById('conversion_rate').addEventListener('input', function() {
+    document.getElementById('conversionValue').textContent = this.value + '%';
+    updatePreview();
+});
+
+// Live update van alle velden
+document.getElementById('num_leads').addEventListener('input', updatePreview);
+document.getElementById('average_deal_value').addEventListener('input', updatePreview);
+
+function updatePreview() {
+    const numLeads = parseInt(document.getElementById('num_leads').value) || 0;
+    const conversionRate = parseFloat(document.getElementById('conversion_rate').value) / 100 || 0;
+    const avgDealValue = parseFloat(document.getElementById('average_deal_value').value) || 0;
+    
+    const expectedRevenue = numLeads * conversionRate * avgDealValue;
+    
+    document.getElementById('previewAmount').textContent = expectedRevenue.toLocaleString('nl-NL', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+    
+    document.getElementById('previewFormula').textContent = 
+        `${numLeads} leads × ${(conversionRate * 100).toFixed(0)}% × €${avgDealValue.toLocaleString('nl-NL')}`;
+}
+
+// Scenario selectie handler
+document.getElementById('scenario_id').addEventListener('change', function() {
+    if (this.value) {
+        // In een echte applicatie zou je hier de scenario data ophalen via AJAX
+        alert('Scenario geselecteerd: ' + this.value + '\n\nDe parameters worden automatisch ingevuld bij het submitten van het formulier.');
+    }
+});
+
+// Initialize preview
+updatePreview();
+</script>
+{% endblock %}

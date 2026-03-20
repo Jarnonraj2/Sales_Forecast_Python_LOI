@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Mijn Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2><i class="bi bi-speedometer2"></i> Mijn Dashboard</h2>
+    <p class="text-muted">Welkom, {{ salesperson.name }}</p>
+</div>
+
+<!-- Statistieken -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stat-card primary">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stat-icon">
+                        <i class="bi bi-people"></i>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <h3 class="mb-0">{{ stats.total_leads }}</h3>
+                    <p class="text-muted mb-0">Mijn Leads</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card success">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stat-icon">
+                        <i class="bi bi-check-circle"></i>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <h3 class="mb-0">{{ stats.total_deals }}</h3>
+                    <p class="text-muted mb-0">Gesloten Deals</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card warning">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stat-icon">
+                        <i class="bi bi-currency-euro"></i>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <h3 class="mb-0">€{{ "{:,.0f}".format(stats.expected_revenue) }}</h3>
+                    <p class="text-muted mb-0">Verwachte Omzet</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card danger">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <div class="stat-icon">
+                        <i class="bi bi-graph-up"></i>
+                    </div>
+                </div>
+                <div class="text-end">
+                    <h3 class="mb-0">{{ "{:.1f}".format(stats.conversion_rate) }}%</h3>
+                    <p class="text-muted mb-0">Conversie Ratio</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Acties -->
+<div class="row g-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-people"></i> Mijn Leads</h5>
+                <p class="card-text">Beheer je leads en converteer ze naar deals</p>
+                <a href="{{ url_for('salesperson_leads') }}" class="btn btn-primary">
+                    <i class="bi bi-arrow-right"></i> Bekijk Leads
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-plus-circle"></i> Nieuwe Lead</h5>
+                <p class="card-text">Voeg een nieuwe lead toe aan je pipeline</p>
+                <a href="{{ url_for('salesperson_new_lead') }}" class="btn btn-success">
+                    <i class="bi bi-plus"></i> Lead Toevoegen
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recente Leads -->
+{% if salesperson.leads %}
+<div class="card mt-4">
+    <div class="card-header">
+        <h5 class="mb-0">Recente Leads</h5>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Bedrijf</th>
+                        <th>Waarde</th>
+                        <th>Verwacht</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lead in salesperson.leads[:5] %}
+                    <tr>
+                        <td><strong>{{ lead.company_name }}</strong></td>
+                        <td>€{{ "{:,.2f}".format(lead.estimated_value) }}</td>
+                        <td>€{{ "{:,.2f}".format(lead.calculate_expected_value()) }}</td>
+                        <td>
+                            <span class="badge bg-{% if lead.status == 'Gewonnen' %}success{% elif lead.status == 'Verloren' %}danger{% elif lead.status == 'In behandeling' %}warning{% else %}secondary{% endif %}">
+                                {{ lead.status }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

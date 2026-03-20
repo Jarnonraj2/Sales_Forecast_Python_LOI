@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Nieuwe Lead{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="display-5 fw-bold">
+        <i class="bi bi-person-plus-fill"></i> Nieuwe Lead Toevoegen
+    </h1>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-pencil"></i> Lead Gegevens
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="company_name" class="form-label">Bedrijfsnaam</label>
+                        <input type="text" class="form-control" id="company_name" name="company_name" 
+                               required placeholder="bijv. ABC Software BV">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="estimated_value" class="form-label">Geschatte Waarde (€)</label>
+                        <input type="number" class="form-control" id="estimated_value" name="estimated_value" 
+                               min="0" step="0.01" value="10000" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="success_probability" class="form-label">
+                            Succeskans (%)
+                            <span id="probabilityValue" class="badge bg-primary">30%</span>
+                        </label>
+                        <input type="range" class="form-range" id="success_probability" name="success_probability" 
+                               min="0" max="100" value="30" step="5">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="Nieuw" selected>Nieuw</option>
+                            <option value="In behandeling">In behandeling</option>
+                            <option value="Gewonnen">Gewonnen</option>
+                            <option value="Verloren">Verloren</option>
+                        </select>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <strong><i class="bi bi-calculator"></i> Verwachte waarde:</strong>
+                        <h4 class="mb-0 mt-2">€<span id="expectedValue">3,000.00</span></h4>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-warning">
+                            <i class="bi bi-save"></i> Lead Opslaan
+                        </button>
+                        <a href="{{ url_for('leads') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Annuleren
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('success_probability').addEventListener('input', function() {
+    document.getElementById('probabilityValue').textContent = this.value + '%';
+    updateExpectedValue();
+});
+
+document.getElementById('estimated_value').addEventListener('input', updateExpectedValue);
+
+function updateExpectedValue() {
+    const estimatedValue = parseFloat(document.getElementById('estimated_value').value) || 0;
+    const probability = parseFloat(document.getElementById('success_probability').value) / 100 || 0;
+    
+    const expected = estimatedValue * probability;
+    document.getElementById('expectedValue').textContent = expected.toLocaleString('nl-NL', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+updateExpectedValue();
+</script>
+{% endblock %}

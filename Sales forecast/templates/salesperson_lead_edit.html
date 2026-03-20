@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Lead Bewerken{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2><i class="bi bi-pencil"></i> Lead Bewerken</h2>
+    <p class="text-muted">Pas de gegevens van je lead aan</p>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="company_name" class="form-label">Bedrijfsnaam *</label>
+                        <input type="text" class="form-control" id="company_name" name="company_name" value="{{ lead.company_name }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="estimated_value" class="form-label">Geschatte Waarde (€) *</label>
+                        <input type="number" step="0.01" class="form-control" id="estimated_value" name="estimated_value" value="{{ lead.estimated_value }}" min="0" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="success_probability" class="form-label">Succeskans (%)</label>
+                        <input type="range" class="form-range" id="success_probability" name="success_probability" min="0" max="100" value="{{ (lead.success_probability * 100)|int }}">
+                        <div class="d-flex justify-content-between">
+                            <span>0%</span>
+                            <span id="probability_value">{{ (lead.success_probability * 100)|int }}%</span>
+                            <span>100%</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="status" class="form-label">Status</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="Nieuw" {% if lead.status == 'Nieuw' %}selected{% endif %}>Nieuw</option>
+                            <option value="In behandeling" {% if lead.status == 'In behandeling' %}selected{% endif %}>In behandeling</option>
+                            <option value="Gewonnen" {% if lead.status == 'Gewonnen' %}selected{% endif %}>Gewonnen</option>
+                            <option value="Verloren" {% if lead.status == 'Verloren' %}selected{% endif %}>Verloren</option>
+                        </select>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check"></i> Opslaan
+                        </button>
+                        <a href="{{ url_for('salesperson_leads') }}" class="btn btn-secondary">
+                            <i class="bi bi-x"></i> Annuleren
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h5 class="card-title">Huidige Verwachte Waarde</h5>
+                <h3>€{{ "{:,.2f}".format(lead.calculate_expected_value()) }}</h3>
+            </div>
+        </div>
+        
+        <div class="card bg-light mt-3">
+            <div class="card-body">
+                <h5 class="card-title">Nieuwe Verwachte Waarde</h5>
+                <h3 id="expected_value_display">€{{ "{:,.2f}".format(lead.calculate_expected_value()) }}</h3>
+            </div>
+        </div>
+        
+        <div class="card bg-light mt-3">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-info-circle"></i> Info</h5>
+                <ul class="small mb-0">
+                    <li>Lead ID: <strong>{{ lead.id }}</strong></li>
+                    <li>Aangemaakt: {{ lead.created_date.strftime('%d-%m-%Y') }}</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Update probability display
+document.getElementById('success_probability').addEventListener('input', function(e) {
+    document.getElementById('probability_value').textContent = e.target.value + '%';
+    updateExpectedValue();
+});
+
+document.getElementById('estimated_value').addEventListener('input', updateExpectedValue);
+
+function updateExpectedValue() {
+    const estimatedValue = parseFloat(document.getElementById('estimated_value').value) || 0;
+    const probability = parseFloat(document.getElementById('success_probability').value) / 100;
+    const expectedValue = estimatedValue * probability;
+    
+    document.getElementById('expected_value_display').textContent = 
+        '€' + expectedValue.toLocaleString('nl-NL', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+}
+</script>
+{% endblock %}

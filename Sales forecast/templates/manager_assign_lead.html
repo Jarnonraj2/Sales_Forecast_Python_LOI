@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}Lead Toewijzen{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2><i class="bi bi-person-plus"></i> Lead Toewijzen</h2>
+    <p class="text-muted">Wijs een lead toe aan een salesperson</p>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Lead Details</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Bedrijfsnaam:</dt>
+                    <dd class="col-sm-8"><strong>{{ lead.company_name }}</strong></dd>
+                    
+                    <dt class="col-sm-4">Geschatte Waarde:</dt>
+                    <dd class="col-sm-8">€{{ "{:,.2f}".format(lead.estimated_value) }}</dd>
+                    
+                    <dt class="col-sm-4">Succeskans:</dt>
+                    <dd class="col-sm-8">{{ (lead.success_probability * 100)|int }}%</dd>
+                    
+                    <dt class="col-sm-4">Verwachte Waarde:</dt>
+                    <dd class="col-sm-8"><strong>€{{ "{:,.2f}".format(lead.calculate_expected_value()) }}</strong></dd>
+                    
+                    <dt class="col-sm-4">Status:</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-{% if lead.status == 'Nieuw' %}primary{% elif lead.status == 'In behandeling' %}warning{% elif lead.status == 'Gewonnen' %}success{% else %}danger{% endif %}">
+                            {{ lead.status }}
+                        </span>
+                    </dd>
+                </dl>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">Toewijzen aan Salesperson</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="salesperson_id" class="form-label">Selecteer Salesperson *</label>
+                        <select class="form-select form-select-lg" id="salesperson_id" name="salesperson_id" required>
+                            <option value="">Kies een salesperson...</option>
+                            {% for sp in salespersons %}
+                            <option value="{{ sp.id }}">
+                                {{ sp.name }} - {{ sp.leads|length }} leads
+                            </option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">Kies de salesperson die deze lead gaat behandelen</div>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="bi bi-check"></i> Lead Toewijzen
+                        </button>
+                        <a href="{{ url_for('leads') }}" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-x"></i> Annuleren
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-people"></i> Team Overzicht</h5>
+                <p class="text-muted small">Beschikbare salespersons</p>
+                
+                {% if salespersons %}
+                <ul class="list-group">
+                    {% for sp in salespersons %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ sp.name }}
+                        <span class="badge bg-primary rounded-pill">{{ sp.leads|length }} leads</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted">Geen salespersons beschikbaar</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card bg-light mt-3">
+            <div class="card-body">
+                <h5 class="card-title"><i class="bi bi-info-circle"></i> Tips</h5>
+                <ul class="small mb-0">
+                    <li>Verdeel leads gelijkmatig over je team</li>
+                    <li>Houd rekening met expertise en beschikbaarheid</li>
+                    <li>Check regelmatig de voortgang van toegewezen leads</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

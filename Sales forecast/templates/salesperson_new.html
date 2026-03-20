@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Nieuwe Sales Person{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="display-5 fw-bold">
+        <i class="bi bi-person-plus-fill"></i> Nieuwe Sales Person
+    </h1>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-pencil"></i> Sales Person Gegevens
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Naam</label>
+                        <input type="text" class="form-control" id="name" name="name" 
+                               required placeholder="bijv. Jan Jansen">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" 
+                               required placeholder="jan.jansen@sps.nl">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="manager_id" class="form-label">Manager (optioneel)</label>
+                        <select class="form-select" id="manager_id" name="manager_id">
+                            <option value="">-- Geen manager --</option>
+                            {% for manager in managers %}
+                            <option value="{{ manager.id }}">{{ manager.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-save"></i> Sales Person Opslaan
+                        </button>
+                        <a href="{{ url_for('team') }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Annuleren
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Leads{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1 class="display-5 fw-bold">
+            <i class="bi bi-people"></i> Leads
+        </h1>
+        <p class="text-muted">Overzicht van alle leads</p>
+    </div>
+    <div>
+        <a href="{{ url_for('new_lead') }}" class="btn btn-warning">
+            <i class="bi bi-plus-circle"></i> Nieuwe Lead
+        </a>
+        <a href="{{ url_for('import_excel') }}" class="btn btn-info text-white">
+            <i class="bi bi-upload"></i> Import
+        </a>
+    </div>
+</div>
+
+{% if leads %}
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Bedrijfsnaam</th>
+                        <th>Geschatte Waarde</th>
+                        <th>Succeskans</th>
+                        <th>Verwachte Waarde</th>
+                        <th>Status</th>
+                        <th>Toegewezen aan</th>
+                        <th>Acties</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lead in leads %}
+                    <tr>
+                        <td>{{ lead.id }}</td>
+                        <td><strong>{{ lead.company_name }}</strong></td>
+                        <td>€{{ "{:,.2f}".format(lead.estimated_value) }}</td>
+                        <td>
+                            <span class="badge bg-info">{{ (lead.success_probability * 100)|int }}%</span>
+                        </td>
+                        <td><strong>€{{ "{:,.2f}".format(lead.calculate_expected_value()) }}</strong></td>
+                        <td>
+                            {% if lead.status == 'Nieuw' %}
+                                <span class="badge bg-primary">{{ lead.status }}</span>
+                            {% elif lead.status == 'In behandeling' %}
+                                <span class="badge bg-warning">{{ lead.status }}</span>
+                            {% elif lead.status == 'Gewonnen' %}
+                                <span class="badge bg-success">{{ lead.status }}</span>
+                            {% else %}
+                                <span class="badge bg-danger">{{ lead.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if lead.sales_person_id %}
+                                {% for sp in salespersons %}
+                                    {% if sp.id == lead.sales_person_id %}
+                                        <span class="badge bg-success">{{ sp.name }}</span>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <small class="text-muted">-</small>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{{ url_for('edit_lead', lead_id=lead.id) }}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-pencil"></i> Bewerken
+                            </a>
+                            
+                            <a href="{{ url_for('manager_assign_lead_page', lead_id=lead.id) }}" class="btn btn-sm btn-outline-success">
+                                <i class="bi bi-person-plus"></i> Wijs Toe
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-3">
+            <strong>Totale verwachte waarde: </strong>
+            €{{ "{:,.2f}".format(total_expected_value) }}
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-people" style="font-size: 4rem; color: #ccc;"></i>
+        <h3 class="mt-3">Geen leads beschikbaar</h3>
+        <p class="text-muted">Voeg leads toe of importeer ze vanaf Excel</p>
+        <div class="mt-3">
+            <a href="{{ url_for('new_lead') }}" class="btn btn-warning me-2">
+                <i class="bi bi-plus-circle"></i> Nieuwe Lead
+            </a>
+            <a href="{{ url_for('import_excel') }}" class="btn btn-info text-white">
+                <i class="bi bi-upload"></i> Excel Import
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

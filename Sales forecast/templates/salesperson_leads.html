@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Mijn Leads{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h2><i class="bi bi-people"></i> Mijn Leads</h2>
+            <p class="text-muted">Beheer je leads en converteer naar deals</p>
+        </div>
+        <a href="{{ url_for('salesperson_new_lead') }}" class="btn btn-success">
+            <i class="bi bi-plus"></i> Nieuwe Lead
+        </a>
+    </div>
+</div>
+
+{% if leads %}
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Bedrijf</th>
+                        <th>Geschatte Waarde</th>
+                        <th>Succeskans</th>
+                        <th>Verwachte Waarde</th>
+                        <th>Status</th>
+                        <th>Acties</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lead in leads %}
+                    <tr>
+                        <td><strong>{{ lead.company_name }}</strong></td>
+                        <td>€{{ "{:,.2f}".format(lead.estimated_value) }}</td>
+                        <td>{{ "{:.0f}".format(lead.success_probability * 100) }}%</td>
+                        <td>€{{ "{:,.2f}".format(lead.calculate_expected_value()) }}</td>
+                        <td>
+                            <span class="badge bg-{% if lead.status == 'Gewonnen' %}success{% elif lead.status == 'Verloren' %}danger{% elif lead.status == 'In behandeling' %}warning{% else %}secondary{% endif %}">
+                                {{ lead.status }}
+                            </span>
+                        </td>
+                        <td>
+                            <!-- Bewerken -->
+                            <a href="{{ url_for('salesperson_edit_lead', lead_id=lead.id) }}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-pencil"></i> Bewerken
+                            </a>
+                            
+                            <!-- Converteer naar deal -->
+                            {% if lead.status == 'Gewonnen' %}
+                            <a href="{{ url_for('salesperson_convert_lead_page', lead_id=lead.id) }}" class="btn btn-sm btn-success">
+                                <i class="bi bi-check-circle"></i> Maak Deal
+                            </a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="mt-3">
+            <strong>Totale verwachte waarde: </strong>
+            €{{ "{:,.2f}".format(total_expected_value) }}
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-people" style="font-size: 4rem; color: #ccc;"></i>
+        <h3 class="mt-3">Nog geen leads</h3>
+        <p class="text-muted">Voeg je eerste lead toe om te beginnen</p>
+        <a href="{{ url_for('salesperson_new_lead') }}" class="btn btn-success mt-3">
+            <i class="bi bi-plus"></i> Eerste Lead Toevoegen
+        </a>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

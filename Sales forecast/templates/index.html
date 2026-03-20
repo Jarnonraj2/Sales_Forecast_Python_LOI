@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<div class="text-center py-5">
+    <h1 class="display-3 fw-bold mb-3">
+        <i class="bi bi-graph-up-arrow text-primary"></i>
+        Sales Forecast Simulatie
+    </h1>
+    <p class="lead text-muted mb-5">
+        Professionele omzetprognoses op basis van leaddata, conversiepercentages en dealwaardes
+    </p>
+    
+    <div class="row g-4 mt-5">
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-calculator-fill text-primary" style="font-size: 3rem;"></i>
+                    </div>
+                    <h3 class="card-title h4 mb-3">Simulaties</h3>
+                    <p class="card-text text-muted">
+                        Maak realistische omzetprognoses op basis van uw leaddata en conversiepercentages
+                    </p>
+                    <a href="{{ url_for('new_simulation') }}" class="btn btn-primary mt-3">
+                        <i class="bi bi-plus-circle"></i> Nieuwe Simulatie
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-layers-fill text-success" style="font-size: 3rem;"></i>
+                    </div>
+                    <h3 class="card-title h4 mb-3">Scenario's</h3>
+                    <p class="card-text text-muted">
+                        Maak verschillende scenario's en vergelijk de impact op uw jaaromzet
+                    </p>
+                    <a href="{{ url_for('new_scenario') }}" class="btn btn-success mt-3">
+                        <i class="bi bi-plus-circle"></i> Nieuw Scenario
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body text-center p-4">
+                    <div class="mb-3">
+                        <i class="bi bi-file-earmark-excel-fill text-warning" style="font-size: 3rem;"></i>
+                    </div>
+                    <h3 class="card-title h4 mb-3">Excel Import</h3>
+                    <p class="card-text text-muted">
+                        Importeer uw bestaande leaddata rechtstreeks vanuit Excel bestanden
+                    </p>
+                    <a href="{{ url_for('import_excel') }}" class="btn btn-warning mt-3">
+                        <i class="bi bi-upload"></i> Data Importeren
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body p-5">
+                    <h2 class="h3 mb-4">
+                        <i class="bi bi-info-circle text-primary"></i>
+                        Over deze applicatie
+                    </h2>
+                    <p class="text-muted mb-3">
+                        De Sales Forecast Simulatie applicatie helpt organisaties bij het maken van 
+                        onderbouwde omzetprognoses. Door het combineren van leaddata, conversiepercentages 
+                        en gemiddelde dealwaardes ontstaat een realistisch beeld van de verwachte omzet 
+                        per maand, kwartaal of jaar.
+                    </p>
+                    <div class="row mt-4">
+                        <div class="col-md-3 text-center">
+                            <i class="bi bi-check-circle-fill text-success mb-2" style="font-size: 2rem;"></i>
+                            <p class="mb-0 fw-bold">Accurate Prognoses</p>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <i class="bi bi-check-circle-fill text-success mb-2" style="font-size: 2rem;"></i>
+                            <p class="mb-0 fw-bold">Scenario Analyse</p>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <i class="bi bi-check-circle-fill text-success mb-2" style="font-size: 2rem;"></i>
+                            <p class="mb-0 fw-bold">Excel Integratie</p>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <i class="bi bi-check-circle-fill text-success mb-2" style="font-size: 2rem;"></i>
+                            <p class="mb-0 fw-bold">Team Beheer</p>
+                        </div>
+                    </div>
+                    <div class="text-center mt-4">
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">
+                            <i class="bi bi-speedometer2"></i> Naar Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

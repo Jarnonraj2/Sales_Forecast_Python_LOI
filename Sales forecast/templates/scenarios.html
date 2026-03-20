@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Scenario's{% endblock %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center">
+    <div>
+        <h1 class="display-5 fw-bold">
+            <i class="bi bi-layers"></i> Scenario's
+        </h1>
+        <p class="text-muted">Beheer verschillende prognose scenario's</p>
+    </div>
+    <a href="{{ url_for('new_scenario') }}" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Nieuw Scenario
+    </a>
+</div>
+
+{% if scenarios %}
+<div class="row g-4">
+    {% for scenario in scenarios %}
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-layers-fill text-success"></i>
+                    {{ scenario.name }}
+                </h5>
+                
+                <div class="alert alert-success mb-3">
+                    <h4 class="mb-0">€{{ "{:,.2f}".format(scenario.calculate_expected_revenue()) }}</h4>
+                    <small>Verwachte Omzet</small>
+                </div>
+                
+                <table class="table table-sm">
+                    <tr>
+                        <td><i class="bi bi-people"></i> Leads:</td>
+                        <td class="text-end"><strong>{{ scenario.num_leads }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td><i class="bi bi-percent"></i> Conversie:</td>
+                        <td class="text-end"><strong>{{ (scenario.conversion_rate * 100)|int }}%</strong></td>
+                    </tr>
+                    <tr>
+                        <td><i class="bi bi-currency-euro"></i> Gem. Deal:</td>
+                        <td class="text-end"><strong>€{{ "{:,.2f}".format(scenario.average_deal_value) }}</strong></td>
+                    </tr>
+                </table>
+                
+                <div class="d-flex gap-2 mt-3">
+                    <a href="{{ url_for('new_simulation') }}?scenario={{ scenario.name }}" 
+                       class="btn btn-sm btn-primary flex-fill">
+                        <i class="bi bi-calculator"></i> Gebruik
+                    </a>
+                    <form method="POST" action="{{ url_for('delete_scenario', scenario_name=scenario.name) }}" 
+                          class="d-inline"
+                          onsubmit="return confirm('Weet u zeker dat u dit scenario wilt verwijderen?');">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="card">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-layers" style="font-size: 4rem; color: #ccc;"></i>
+        <h3 class="mt-3">Geen scenario's beschikbaar</h3>
+        <p class="text-muted">Maak verschillende scenario's om prognoses te vergelijken</p>
+        <a href="{{ url_for('new_scenario') }}" class="btn btn-success mt-3">
+            <i class="bi bi-plus-circle"></i> Eerste Scenario Maken
+        </a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
